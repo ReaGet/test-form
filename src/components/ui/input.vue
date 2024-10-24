@@ -16,12 +16,13 @@
       :disabled="disabled"
       @focus="isFocused = true"
       @blur="isFocused = false"
+      v-model="model"
     />
     <span
       :class="cn(
         'absolute px-1 left-0 top-1/2 -translate-y-1/2 translate-x-6 text-[1.6rem] text-[#9E9E9E] pointer-events-none transition-transform bg-white',
         {
-          'scale-75 translate-x-0 -translate-y-[160%]': isFocused,
+          'scale-75 translate-x-0 -translate-y-[160%]': isFocused || model.length > 0,
           'text-red': error,
         }
       )"
@@ -47,9 +48,12 @@ type InputProps = {
 }
 
 withDefaults(defineProps<InputProps>(), {
+  value: '',
   type: 'text',
   disabled: false,
   error: ''
 })
-
+const model = defineModel<string>({
+  default: ''
+})
 </script>

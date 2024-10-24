@@ -12,11 +12,7 @@
 
     <form action="" @submit.prevent class="flex flex-col gap-16 mt-12">
       <PhoneCodeSelector />
-      <Input name="phone" placeholder="Номер телефона" error="Неверный формат номера" />
-      <!-- <input
-        class="w-full p-6 border border-black/10 focus:border-black/20 hover:border-black/20 rounded-lg text-[1.6rem] leading-[2.4rem] placeholder:text-[#9E9E9E] outline-none"
-        placeholder="Номер телефона"
-      /> -->
+      <Input name="phone" placeholder="Номер телефона" v-model="phoneValue" />
       <div class="flex gap-4">
         <button
           class="flex justify-center items-center gap-4 h-[5.5rem] w-full mt-4 text-primary hover:text-[#046fe3] text-[1.6rem] rounded-lg transition-colors hover:bg-[#f8f8f8]"
@@ -45,4 +41,7 @@ import PhoneCodeSelector from '../phone-code-selector.vue'
 import IconArrowDownFilled from '../icons/i-arrow-down-filled.vue'
 import IconArrowLeft from '../icons/i-arrow-left.vue'
 import Input from '../ui/input.vue'
+import { ref } from 'vue';
+
+const phoneValue = ref('')
 </script>
