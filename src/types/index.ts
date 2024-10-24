@@ -4,3 +4,10 @@ export type IconProps = {
   color?: string
   class?: string
 }
+
+export type PhoneCode = {
+  name: string
+  flag: string
+  code: string
+  dial_code: string
+}
