@@ -9,6 +9,9 @@ export default {
       colors: {
         primary: {
           DEFAULT: '#007AFF',
+        },
+        red: {
+          DEFAULT: '#EB4036',
         }
       },
       borderRadius: {

@@ -2,7 +2,7 @@ export type IconProps = {
   width?: number
   height?: number
   color?: string
-  class?: string
+  className?: string
 }
 
 export type PhoneCode = {

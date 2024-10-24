@@ -1,5 +1,5 @@
 <template>
-  <svg :class="class" :width="width" :height="height" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg :class="className" :width="width" :height="height" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M6.79232 2.70677L1.55467 7.95682C1.41331 8.09842 1.33332 8.29464 1.33332 8.49995C1.33332 8.70527 1.41331 8.9012 1.55467 9.04308L6.79232 14.2931C7.07784 14.5783 7.52976 14.5675 7.80236 14.2677C8.07483 13.9709 8.0646 13.4943 7.77818 13.2071L3.82911 9.25082H13.9521C14.3464 9.25082 14.6667 8.91456 14.6667 8.5005C14.6667 8.08643 14.3464 7.7508 13.9521 7.7508H3.83097L7.78004 3.79452C8.06603 3.50678 8.07495 3.03022 7.80414 2.7324C7.53036 2.4324 7.1048 2.42177 6.79232 2.70677Z" :fill="color"/>
   </svg>
 </template>
@@ -11,6 +11,6 @@ withDefaults(defineProps<IconProps>(), {
   width: 24,
   height: 24,
   color: '#9E9E9E',
-  class: '',
+  className: '',
 })
 </script>

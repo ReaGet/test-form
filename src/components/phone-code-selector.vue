@@ -1,17 +1,17 @@
 <template>
-  <div v-if="!isLoading" class="phone-code-selector relative w-full" ref="selectEl" @click="() => isOpen = !isOpen">
+  <div class="phone-code-selector relative w-full" ref="selectEl" @click="() => isOpen = !isOpen">
     <div class="h-[5.5rem] p-6 border border-black/10 hover:border-black/20 rounded-lg cursor-pointer">
       <span class="absolute -top-3 left-8 text-[1.2rem] text-[#9E9E9E] leading-[1.6rem] bg-white">Страна</span>
       <div class="flex">
         <div class="text-[1.6rem] leading-[2.4rem] line-clamp-1">{{ selectedCode?.name || 'Выберите из списка' }}</div>
-        <IconArrowDown class="shrink-0 ml-auto" />
+        <IconArrowDown className="shrink-0 ml-auto" />
       </div>
     </div>
 
     <div v-if="isOpen" class="absolute w-full mt-2 top-full shadow-custom bg-white z-10" @click.stop>
       <div class="p-6">
         <div class="relative flex items-center">
-          <IconSearch :width="20" :height="20" class="absolute left-4" />
+          <IconSearch :width="20" :height="20" className="absolute left-4" />
           <input
             type="text"
             class="w-full py-4 px-14 text-[1.4rem] bg-[#F8F8F8] placeholder:text-[#9E9E9E] outline-none rounded-xl"
