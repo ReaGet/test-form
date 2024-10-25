@@ -20,13 +20,7 @@ const defaultOptions: FetchOptions = {
   }
 }
 
-
-export const useFetch = <T>(url: string, options: FetchOptions = defaultOptions): FetchReturnType<T> => {
-  const isLoading = ref(false)
-  const isError = ref(false)
-  const data = ref<T|null>(null)
-  const error = ref<any>('')
-
+export const useLazyFetch = <T>(url: string, options: FetchOptions = defaultOptions): [() => Promise<T>] => {
   const finalOptions: FetchOptions = {
     ...defaultOptions,
     ...options,
@@ -41,15 +35,34 @@ export const useFetch = <T>(url: string, options: FetchOptions = defaultOptions)
       return await fetch(url, finalOptions)
         .then(res => res.json())
         .then(result => {
-          data.value = result as T
-        })
-        .finally(() => {
-          isError.value = false
+          return result as T
         })
     } catch(e) {
+      return Promise.reject(e)
+    }
+  }
+
+  return [
+    async () => await tryFetch(),
+
+  ]
+}
+
+export const useFetch = <T>(url: string, options: FetchOptions = defaultOptions): FetchReturnType<T> => {
+  const isLoading = ref(false)
+  const isError = ref(false)
+  const data = ref<T|null>(null)
+  const error = ref<any>('')
+  const [$fetch] = useLazyFetch<T>(url, options)
+
+  const tryFetch = async () => {
+    $fetch().then(result => {
+      data.value = result
+      isError.value = false
+    }).catch(e => {
       isError.value = true
       error.value = e
-    }
+    })
   }
 
   tryFetch()

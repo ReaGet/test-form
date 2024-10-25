@@ -45,6 +45,7 @@ import Input from '../../ui/input.vue'
 import { ref, watchEffect } from 'vue'
 import { CodeRecieveType } from '../../../types';
 import { injectLoginContext } from './form.vue';
+import { useFetch, useLazyFetch } from '../../../hooks/use-fetch';
 
 const socials: CodeRecieveType[] = [
   { name: 'WhatApp', icon: 'wa' },
@@ -60,8 +61,13 @@ const countdownValue = ref(countdownInitValue)
 const timerId = ref<ReturnType<typeof setInterval> | null>(null)
 
 const { prevStep } = injectLoginContext()
+const apiUrl = 'http://api.kod.mobi/v2'
 
-const handleSend = () => {
+const [$fetch] = useLazyFetch(`${apiUrl}/create`, {
+  method: 'POST'
+})
+
+const handleSend = async () => {
   startCountdown()
 }
 
