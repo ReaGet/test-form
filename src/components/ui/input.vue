@@ -1,9 +1,9 @@
 <template>
-  <label class="relative flex items-center" :for="name">
+  <label class="relative" :for="name">
     <input
       :id="name"
       :class="cn(
-        'w-full p-6 border border-black/10 focus:border-black/10 hover:border-black/20 rounded-lg text-[1.6rem] leading-[2.4rem] outline-none',
+        'w-full h-[5.5rem] p-6 border border-black/10 focus:border-black/10 hover:border-black/20 rounded-lg text-[1.6rem] leading-[2.4rem] outline-none',
         className,
         {
           'border-red focus:border-red hover:border-red': error,
@@ -20,9 +20,9 @@
     />
     <span
       :class="cn(
-        'absolute px-1 left-0 top-1/2 -translate-y-1/2 translate-x-6 text-[1.6rem] text-[#9E9E9E] pointer-events-none transition-transform bg-white',
+        'absolute px-1 -ml-1 left-0 top-1/2 -translate-y-1/2 translate-x-6 text-[1.6rem] text-[#9E9E9E] pointer-events-none transition-all bg-white',
         {
-          'scale-75 translate-x-0 -translate-y-[160%]': isFocused || model.length > 0,
+          'text-[1.2rem] top-0 -translate-y-1/3': isFocused || model.length > 0,
           'text-red': error,
         }
       )"
@@ -53,6 +53,7 @@ withDefaults(defineProps<InputProps>(), {
   disabled: false,
   error: ''
 })
+
 const model = defineModel<string>({
   default: ''
 })
