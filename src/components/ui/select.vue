@@ -67,7 +67,7 @@ import IconClose from '../icons/i-close.vue'
 import { cn } from '../../lib/cn';
 
 type SelectProps = {
-  selected?: string
+  defaultValue?: ItemType | null | undefined
   items: ItemType[] | Ref<ItemType[] | null>
   searchable?: boolean
   filteringKey?: K
@@ -76,7 +76,7 @@ type SelectProps = {
 
 const props = withDefaults(defineProps<SelectProps>(), {
   searchable: false,
-  selected: '',
+  defaultValue: null,
   placeholder: ''
 })
 
@@ -88,6 +88,11 @@ const selectEl = ref(null)
 const emit = defineEmits<{
   (e: 'change', selected: ItemType): void
 }>()
+
+onMounted(() => {
+  if (props.defaultValue)
+    selectedValue.value = props.defaultValue
+})
 
 const closeContent = () => {
   isOpen.value = false

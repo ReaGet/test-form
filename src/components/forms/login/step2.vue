@@ -1,12 +1,12 @@
 <template>
-  <div class="flex gap-4">
+  <div class="flex flex-col gap-16 mt-12">
     <Select
-      :items="socials"
-      placeholder="Способ получения кода"
-      @change="value => socialType = value"
+    :items="socials"
+    placeholder="Способ получения кода"
+    @change="value => socialType = value"
     >
       <template v-slot:selected="{ value }">
-        {{ value?.name || '' }}
+      {{ value?.name || '' }}
       </template>
 
       <template v-slot:default="item">
@@ -24,14 +24,17 @@
         <span v-else class="text-[#9E9E9E] pointer-events-none">0:{{ formatCountdown(countdownValue) }}</span>
       </div>
     </div>
-    <button
-      class="flex justify-center items-center gap-4 h-[5.5rem] w-full mt-4 text-primary hover:text-primary-hover text-[1.6rem] rounded-lg transition-colors hover:bg-[#f8f8f8]"
-    >
-      <IconArrowLeft className="fill-current" color="''" :width="16" :height="16"/> Назад
-    </button>
-    <button
-      class="h-[5.5rem] w-full mt-4 bg-primary hover:bg-primary-hover text-[1.6rem] text-white rounded-lg transition-colors"
-    >Продолжить</button>
+    <div class="flex gap-4">
+      <button
+        @click="prevStep"
+        class="flex justify-center items-center gap-4 h-[5.5rem] w-full mt-4 text-primary hover:text-primary-hover text-[1.6rem] rounded-lg transition-colors hover:bg-[#f8f8f8]"
+      >
+        <IconArrowLeft className="fill-current" color="''" :width="16" :height="16"/> Назад
+      </button>
+      <button
+        class="h-[5.5rem] w-full mt-4 bg-primary hover:bg-primary-hover text-[1.6rem] text-white rounded-lg transition-colors"
+      >Продолжить</button>
+    </div>
   </div>
 </template>
 
@@ -40,6 +43,7 @@ import Select from '../../ui/select.vue'
 import Input from '../../ui/input.vue'
 import { ref, watchEffect } from 'vue'
 import { CodeRecieveType } from '../../../types';
+import { injectLoginContext } from './form.vue';
 
 const socials: CodeRecieveType[] = [
   { name: 'WhatApp', icon: 'wa' },
@@ -53,6 +57,8 @@ const codeValue = ref('')
 const isWaitingCode = ref(false)
 const countdownValue = ref(countdownInitValue)
 const timerId = ref<ReturnType<typeof setInterval> | null>(null)
+
+const { prevStep } = injectLoginContext()
 
 const handleSend = () => {
   startCountdown()

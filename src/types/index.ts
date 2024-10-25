@@ -5,7 +5,7 @@ export type IconProps = {
   className?: string
 }
 
-export type PhoneCode = {
+export type CountryCodeType = {
   name: string
   flag: string
   code: string

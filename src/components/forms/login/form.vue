@@ -32,6 +32,8 @@
 type LoginFormContext = {
   nextStep: () => void
   prevStep: () => void
+  countryCode: Ref<CountryCodeType|null>
+  phoneNumber: Ref<string>
 }
 
 export const [injectLoginContext, provideLoginContext] = createContext<LoginFormContext>('LoginFormContext')
@@ -49,28 +51,31 @@ const headings = [
 </script>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, Ref, ref } from 'vue'
 import { createContext } from '../../../lib/createContext'
 import IconArrowDownFilled from '../../icons/i-arrow-down-filled.vue'
-import IconArrowLeft from '../../icons/i-arrow-left.vue'
+// import IconArrowLeft from '../../icons/i-arrow-left.vue'
 import Step1 from './step1.vue'
 import Step2 from './step2.vue'
+import { CountryCodeType } from '../../../types'
 
 const currentStep = ref(0)
+const countryCode = ref<CountryCodeType|null>(null)
+const phoneNumber = ref('')
 
 const prevStep = () => {
   currentStep.value--
-  console.log('prev')
 }
 
 const nextStep = () => {
   currentStep.value++
-  console.log('next')
 }
 
 provideLoginContext({
   nextStep,
   prevStep,
+  countryCode,
+  phoneNumber
 })
 
 const currentHeading = computed(() => {

@@ -1,10 +1,13 @@
 <template>
   <div class="flex flex-col gap-16 mt-12">
-    <PhoneCodeSelector @change="code => phoneCode = code" />
+    <PhoneCodeSelector
+      @change="handleCountryCodeChange"
+      :default-value="countryCode"
+    />
     <Input
       name="phone"
       placeholder="Номер телефона"
-      v-model="phoneValue"
+      v-model="phoneNumber"
       @input="handleInput"
       :error="error"
     />
@@ -20,34 +23,33 @@
 <script setup lang="ts">
 import PhoneCodeSelector from '../../phone-code-selector.vue'
 import Input from '../../ui/input.vue'
-import { ref, watchEffect } from 'vue'
-import { PhoneCode } from '../../../types'
+import { ref } from 'vue'
 import { injectLoginContext } from './form.vue'
+import { CountryCode, isValidNumberForRegion } from 'libphonenumber-js'
+import { CountryCodeType } from '../../../types'
 
-const phoneCode = ref<PhoneCode>()
-const phoneValue = ref('')
 const error = ref('')
 
-const { nextStep } = injectLoginContext()
+const { nextStep, countryCode, phoneNumber } = injectLoginContext()
 
-watchEffect(() => {
-  const code = phoneCode.value
-  if (!code) return
-
-  phoneValue.value = `${code.dial_code} `
-})
+const handleCountryCodeChange = (code: CountryCodeType) => {
+  countryCode.value = code
+  phoneNumber.value = `${code.dial_code} `
+}
 
 const handleClick = () => {
   validate()
+  if (!error.value) nextStep()
 }
 
-const handleInput = () => {
-  validate()
-}
+const handleInput = () => validate()
 
 const validate = () => {
-  if (!phoneValue.value.trim().length)
-    return error.value = 'Значение не должно быть пустым'
+  const _countryCode = (countryCode.value?.code || '') as CountryCode
+
+  if (
+    !isValidNumberForRegion(phoneNumber.value, _countryCode)
+  ) return error.value = 'Неверный формат номера'
 
   error.value = ''
 }
