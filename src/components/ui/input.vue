@@ -1,5 +1,5 @@
 <template>
-  <label class="relative" :for="name">
+  <label class="relative block" :for="name">
     <input
       :id="name"
       :class="cn(
@@ -16,6 +16,7 @@
       :disabled="disabled"
       @focus="isFocused = true"
       @blur="isFocused = false"
+      @input="() => emit('input', model)"
       v-model="model"
     />
     <span
@@ -57,4 +58,8 @@ withDefaults(defineProps<InputProps>(), {
 const model = defineModel<string>({
   default: ''
 })
+
+const emit = defineEmits<{
+  (e: 'input', value: string): void
+}>()
 </script>

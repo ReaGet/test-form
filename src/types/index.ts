@@ -11,3 +11,8 @@ export type PhoneCode = {
   code: string
   dial_code: string
 }
+
+export type CodeRecieveType = {
+  name: string
+  icon: string
+}

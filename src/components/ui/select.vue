@@ -17,8 +17,8 @@
       >{{ placeholder }}</span>
     </div>
 
-    <div v-if="isOpen" class="absolute w-full pb-2 mt-2 top-full shadow-custom bg-white z-10" @click.stop>
-      <div v-if="searchable" class="p-6">
+    <div v-if="isOpen" class="absolute w-full py-2 mt-2 top-full shadow-custom bg-white z-10" @click.stop>
+      <div v-if="searchable" class="p-6 pt-4">
         <div class="relative flex items-center">
           <IconSearch :width="20" :height="20" className="absolute left-4" />
           <input
@@ -75,7 +75,7 @@ type SelectProps = {
 }
 
 const props = withDefaults(defineProps<SelectProps>(), {
-  searchable: true,
+  searchable: false,
   selected: '',
   placeholder: ''
 })
