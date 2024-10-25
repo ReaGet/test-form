@@ -1,9 +1,10 @@
 <template>
   <div class="flex flex-col gap-16 mt-12">
     <Select
-    :items="socials"
-    placeholder="Способ получения кода"
-    @change="value => socialType = value"
+      :items="socials"
+      placeholder="Способ получения кода"
+      :default-value="socials[0]"
+      @change="value => socialType = value"
     >
       <template v-slot:selected="{ value }">
       {{ value?.name || '' }}
