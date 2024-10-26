@@ -12,7 +12,7 @@ export type CountryCodeType = {
   dial_code: string
 }
 
-export type CodeRecieveType = {
+export type ChannelType = {
   name: string
   icon: string
 }

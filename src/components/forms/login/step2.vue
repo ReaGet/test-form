@@ -1,10 +1,10 @@
 <template>
   <div class="flex flex-col gap-16 mt-12">
     <Select
-      :items="socials"
+      :items="channelList"
       placeholder="Способ получения кода"
-      :default-value="socials[0]"
-      @change="value => socialType = value"
+      :default-value="channel || channelList[0]"
+      @change="value => channel = value"
     >
       <template v-slot:selected="{ value }">
       {{ value?.name || '' }}
@@ -43,18 +43,17 @@
 import Select from '../../ui/select.vue'
 import Input from '../../ui/input.vue'
 import { ref, watchEffect } from 'vue'
-import { CodeRecieveType } from '../../../types';
+import { ChannelType } from '../../../types';
 import { injectLoginContext } from './form.vue';
-import { useFetch, useLazyFetch } from '../../../hooks/use-fetch';
+// import { useFetch, useLazyFetch } from '../../../hooks/use-fetch';
 
-const socials: CodeRecieveType[] = [
+const channelList: ChannelType[] = [
   { name: 'WhatApp', icon: 'wa' },
   { name: 'Telegram', icon: 'tg' },
   { name: 'Viber', icon: 'vb' },
   { name: 'SMS', icon: 'sms' },
 ]
 const countdownInitValue = 30
-const socialType = ref<CodeRecieveType>()
 const codeValue = ref('')
 const isWaitingCode = ref(false)
 const countdownValue = ref(countdownInitValue)
@@ -63,9 +62,11 @@ const timerId = ref<ReturnType<typeof setInterval> | null>(null)
 const { prevStep } = injectLoginContext()
 const apiUrl = 'http://api.kod.mobi/v2'
 
-const [$fetch] = useLazyFetch(`${apiUrl}/create`, {
-  method: 'POST'
-})
+// const [$fetch] = useLazyFetch(`${apiUrl}/create`, {
+//   method: 'POST'
+// })
+
+const { channel } = injectLoginContext()
 
 const handleSend = async () => {
   startCountdown()
@@ -92,8 +93,8 @@ const formatCountdown = (value: number) => {
 }
 
 watchEffect(() => {
-  const code = socialType.value
-  if (!code) return
-  console.log(code.name)
+  // const code = channel.value
+  // if (!code) return
+  // console.log(code.name)
 })
 </script>

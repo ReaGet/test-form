@@ -8,6 +8,11 @@ type FetchReturnType<T> = {
   refresh: () => void
 }
 
+type LazyFetchReturnType<T> = [
+  () => void,
+  FetchReturnType<T>
+]
+
 type FetchOptions = {
   method: 'GET' | 'POST'
   headers?: Record<string, string>,
@@ -20,7 +25,11 @@ const defaultOptions: FetchOptions = {
   }
 }
 
-export const useLazyFetch = <T>(url: string, options: FetchOptions = defaultOptions): [() => Promise<T>] => {
+export const useLazyFetch = <T>(url: string, options: FetchOptions = defaultOptions): LazyFetchReturnType<T> => {
+  const isLoading = ref(false)
+  const isError = ref(false)
+  const data = ref<T|null>(null)
+  const error = ref<any>('')
   const finalOptions: FetchOptions = {
     ...defaultOptions,
     ...options,
@@ -30,48 +39,44 @@ export const useLazyFetch = <T>(url: string, options: FetchOptions = defaultOpti
     }
   }
 
+  const setError = (e: Error) => {
+    isError.value = true
+    error.value = e
+  }
+
   const tryFetch = async () => {
     try {
       return await fetch(url, finalOptions)
         .then(res => res.json())
         .then(result => {
-          return result as T
+          data.value = result
+          isError.value = false
+          error.value = null
+        }).catch((e) => setError(e))
+        .finally(() => {
+          isLoading.value = false
         })
     } catch(e) {
-      return Promise.reject(e)
+      setError(e as Error)
     }
   }
 
   return [
     async () => await tryFetch(),
-
+    {
+      isLoading,
+      isError,
+      error,
+      refresh: () => { tryFetch() },
+      data: data as Ref<T|null>,
+    }
   ]
 }
 
 export const useFetch = <T>(url: string, options: FetchOptions = defaultOptions): FetchReturnType<T> => {
-  const isLoading = ref(false)
-  const isError = ref(false)
-  const data = ref<T|null>(null)
-  const error = ref<any>('')
-  const [$fetch] = useLazyFetch<T>(url, options)
+  const [$fetch, data] = useLazyFetch<T>(url, options)
 
-  const tryFetch = async () => {
-    $fetch().then(result => {
-      data.value = result
-      isError.value = false
-    }).catch(e => {
-      isError.value = true
-      error.value = e
-    })
-  }
+  $fetch()
 
-  tryFetch()
-
-  return {
-    isLoading,
-    isError,
-    error,
-    refresh: () => { tryFetch() },
-    data//: (data.value),
-  }
+  return data
 }

@@ -34,6 +34,7 @@ type LoginFormContext = {
   prevStep: () => void
   countryCode: Ref<CountryCodeType|null>
   phoneNumber: Ref<string>
+  channel: Ref<ChannelType|null>
 }
 
 export const [injectLoginContext, provideLoginContext] = createContext<LoginFormContext>('LoginFormContext')
@@ -57,11 +58,12 @@ import IconArrowDownFilled from '../../icons/i-arrow-down-filled.vue'
 // import IconArrowLeft from '../../icons/i-arrow-left.vue'
 import Step1 from './step1.vue'
 import Step2 from './step2.vue'
-import { CountryCodeType } from '../../../types'
+import { CountryCodeType, ChannelType } from '../../../types'
 
 const currentStep = ref(0)
 const countryCode = ref<CountryCodeType|null>(null)
 const phoneNumber = ref('')
+const channel = ref<ChannelType|null>(null)
 
 const prevStep = () => {
   currentStep.value--
@@ -75,7 +77,8 @@ provideLoginContext({
   nextStep,
   prevStep,
   countryCode,
-  phoneNumber
+  phoneNumber,
+  channel
 })
 
 const currentHeading = computed(() => {
