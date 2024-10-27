@@ -70,12 +70,6 @@ onMounted(() => {
   })
 })
 
-// const switchLanguage = (e: Event) => {
-//   const el = e.target as HTMLSelectElement
-//   console.log(el)
-//   // i18n. = newLocale
-// }
-
 const prevStep = () => {
   currentStep.value--
 }
