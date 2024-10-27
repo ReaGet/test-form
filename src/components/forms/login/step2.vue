@@ -113,7 +113,8 @@ const startCountdown = () => {
 }
 
 const resetCoundown = () => {
-  clearInterval(timerId.value as number)
+  if (timerId.value)
+    clearInterval(timerId.value)
   countdownValue.value = currentChannel.value?.timeout || 0
   isWaitingCode.value = false
 }
