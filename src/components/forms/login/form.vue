@@ -5,8 +5,8 @@
         Логотип (Высота 40px, длина до 300px)
       </div>
       <div class="text-center">
-        <div class="text-[3.2rem] leading-[3.75rem] font-medium">{{ currentHeading.heading }}</div>
-        <div class="mt-6 text-[1.6rem] leading-[1.875rem] text-[#666]">{{ currentHeading.subheading() }}</div>
+        <div class="text-[3.2rem] leading-[3.75rem] font-medium">{{ t(`step${currentStep+1}.heading`) }}</div>
+        <div class="mt-6 text-[1.6rem] leading-[1.875rem] text-[#666]">{{ t(`step${currentStep+1}.subheading`) }}</div>
       </div>
     </div>
 
@@ -16,13 +16,12 @@
     </div>
     
     <div class="flex justify-between mt-28 text-[1.2rem] leading-[2.4rem] text-[#666]">
-      <div class="flex items-center gap-3 text-[#666] hover:text-black/80 transition-colors cursor-pointer">
-        Русский
-        <IconArrowDownFilled className="fill-current" />
-      </div>
+      <select class="outline-none" v-model="locale">
+        <option v-for="locale in supportedLocales" :value="locale" :key="locale">{{ locale }}</option>
+      </select>
       <div>
-        <a class="mr-12 hover:text-black/80 transition-colors" href="#">Условия</a>
-        <a class="hover:text-black/80 transition-colors" href="#">Конфиденциальность</a>
+        <a class="mr-12 hover:text-black/80 transition-colors" href="#">{{ t(`conditions`) }}</a>
+        <a class="hover:text-black/80 transition-colors" href="#">{{ t(`confidentiality`) }}</a>
       </div>
     </div>
   </div>
@@ -39,28 +38,18 @@ type LoginFormContext = {
 }
 
 export const [injectLoginContext, provideLoginContext] = createContext<LoginFormContext>('LoginFormContext')
-
-const headings = [
-  {
-    heading: 'Введите номер телефона',
-    subheading: () => 'Чтобы войти или зарегистрироваться'
-  },
-  {
-    heading: 'Введите код',
-    subheading: (phoneNumber = '') => `Отправлен по номеру ${phoneNumber}`
-  }
-]
 </script>
 
 <script setup lang="ts">
-import { computed, Ref, ref, onMounted } from 'vue'
+import { Ref, ref, onMounted, watch } from 'vue'
 import { createContext } from '../../../lib/createContext'
-import IconArrowDownFilled from '../../icons/i-arrow-down-filled.vue'
 import Step1 from './step1.vue'
 import Step2 from './step2.vue'
 import { CountryCodeType } from '../../../types'
 import { getCountryCodes } from '../../../queries/countryCodes'
 import { createSession, CreateSessionPayload, CreateSessionResponse } from '../../../queries/signIn'
+import { useI18n } from 'vue-i18n'
+import { supportedLocales } from '../../../i18n'
 
 const currentStep = ref(0)
 const countryCode = ref<CountryCodeType|null>(null)
@@ -68,11 +57,24 @@ const phoneNumber = ref('')
 const countryCodeList = ref<CountryCodeType[]>([])
 const session = ref<CreateSessionResponse|null>(null)
 
+const { t, locale } = useI18n()
+
+watch(locale, (newLocale) => {
+  locale.value = newLocale
+  localStorage.setItem('lang', newLocale);
+})
+
 onMounted(() => {
   getCountryCodes().then((values) => {
     countryCodeList.value = values
   })
 })
+
+// const switchLanguage = (e: Event) => {
+//   const el = e.target as HTMLSelectElement
+//   console.log(el)
+//   // i18n. = newLocale
+// }
 
 const prevStep = () => {
   currentStep.value--
@@ -100,11 +102,6 @@ provideLoginContext({
   phoneNumber,
   countryCodeList,
   session
-})
-
-const currentHeading = computed(() => {
-  const max = headings.length - 1
-  return headings[Math.max(0, Math.min(currentStep.value, max))]
 })
 
 </script>

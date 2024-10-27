@@ -24,7 +24,7 @@
           <input
             type="text"
             class="w-full py-4 px-14 text-[1.4rem] bg-[#F8F8F8] placeholder:text-[#9E9E9E] outline-none rounded-xl"
-            placeholder="Поиск"
+            :placeholder="t('search')"
             @input="event => searchValue = (event.target as HTMLInputElement).value"
             :value="searchValue"
             autofocus
@@ -64,7 +64,8 @@ import { computed, isRef, onMounted, onUnmounted, Ref, ref, toRaw } from 'vue';
 import IconArrowDown from '../icons/i-arrow-down.vue'
 import IconSearch from '../icons/i-search.vue'
 import IconClose from '../icons/i-close.vue'
-import { cn } from '../../lib/cn';
+import { cn } from '../../lib/cn'
+import { useI18n} from 'vue-i18n'
 
 type SelectProps = {
   defaultValue?: ItemType | null | undefined
@@ -84,6 +85,7 @@ const isOpen = ref(false)
 const selectedValue = ref<ItemType>()
 const searchValue = ref('')
 const selectEl = ref(null)
+const { t } = useI18n()
 
 const emit = defineEmits<{
   (e: 'change', selected: ItemType): void

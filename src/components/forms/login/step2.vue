@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-16 mt-12">
     <Select
       :items="session?.channels || []"
-      placeholder="Способ получения кода"
+      :placeholder="t('step2.delivery_method')"
       :default-value="currentChannel"
       @change="value => currentChannel = value"
     >
@@ -15,13 +15,13 @@
       </template>
     </Select>
     <div class="relative">
-      <Input name="phone" placeholder="Введите код" :disabled="isLoading" @input="handleInput" :error="error" />
+      <Input name="phone" :placeholder="t('step2.heading')" :disabled="isLoading" @input="handleInput" :error="error" />
       <div class="absolute top-1/2 right-6 -translate-y-1/2 text-[1.4rem]">
         <button
           v-if="!isWaitingCode"
           class="text-primary hover:text-primary-hover"
           @click.prevent="handleSend"
-        >Отправить</button>
+        >{{ t('send') }}</button>
         <span v-else-if="countdownValue && countdownValue > 0" class="text-[#9E9E9E] pointer-events-none">0:{{ formatCountdown(countdownValue) }}</span>
       </div>
     </div>
@@ -30,7 +30,7 @@
         @click="prevStep"
         class="flex justify-center items-center gap-4 h-[5.5rem] w-full mt-4 text-primary hover:text-primary-hover text-[1.6rem] rounded-lg transition-colors hover:bg-[#f8f8f8]"
       >
-        <IconArrowLeft className="fill-current" color="''" :width="16" :height="16"/> Назад
+        <IconArrowLeft className="fill-current" color="''" :width="16" :height="16"/> {{ t('back') }}
       </button>
     </div>
   </div>
@@ -43,6 +43,9 @@ import Select from '../../ui/select.vue'
 import Input from '../../ui/input.vue'
 import { injectLoginContext } from './form.vue'
 import { sendCode, type SendCodePayload, type ChannelType, checkCode } from '../../../queries/signIn'
+import { useI18n} from 'vue-i18n'
+
+const { t } = useI18n()
 
 const isWaitingCode = ref(false)
 const countdownValue = ref(0)
@@ -58,11 +61,12 @@ watchEffect(() => {
 })
 
 watchEffect(() => {
-  currentChannel.value = session.value?.channels[0]
+  currentChannel.value = session.value?.channels?.[0]
 })
 
 const handleInput = (value: string) => {
   if (value.length < 4 || isLoading.value || !parseInt(value)) return
+  error.value = ''
   isLoading.value = true
   checkCode({
     session_id: session.value!.session_id,
@@ -93,8 +97,8 @@ const handleSend = async () => {
 
 const getSendCodePayload = (): SendCodePayload => {
   return {
-    session_id: session.value!.session_id,
-    type: currentChannel.value!.type
+    session_id: session.value?.session_id || '',
+    type: currentChannel.value?.type || ''
   }
 }
 
@@ -110,7 +114,7 @@ const startCountdown = () => {
 
 const resetCoundown = () => {
   clearInterval(timerId.value as number)
-  countdownValue.value = currentChannel.value!.timeout
+  countdownValue.value = currentChannel.value?.timeout || 0
   isWaitingCode.value = false
 }
 

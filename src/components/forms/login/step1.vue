@@ -6,7 +6,7 @@
     />
     <Input
       name="phone"
-      placeholder="Номер телефона"
+      :placeholder="t('step1.phone_number')"
       v-model="phoneNumber"
       @input="handleInput"
       :error="error"
@@ -15,7 +15,7 @@
       <button
         @click="handleClick"
         class="h-[5.5rem] w-full mt-4 bg-primary hover:bg-primary-hover text-[1.6rem] text-white rounded-lg transition-colors"
-      >Продолжить</button>
+      >{{ t('continue') }}</button>
     </div>
   </div>
 </template>
@@ -27,8 +27,11 @@ import { ref } from 'vue'
 import { injectLoginContext } from './form.vue'
 import { CountryCode, isValidNumberForRegion } from 'libphonenumber-js'
 import { CountryCodeType } from '../../../types'
+import { useI18n} from 'vue-i18n'
 
-const error = ref('')
+const { t } = useI18n()
+
+const error = ref<string>('')
 
 const { nextStep, countryCode, phoneNumber } = injectLoginContext()
 
@@ -49,7 +52,7 @@ const validate = () => {
 
   if (
     !isValidNumberForRegion(phoneNumber.value, _countryCode)
-  ) return error.value = 'Неверный формат номера'
+  ) return error.value = t('step1.phone_wrong_format')
 
   error.value = ''
 }

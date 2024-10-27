@@ -3,7 +3,7 @@
     :items="loadedCodes"
     :default-value="defaultValue"
     filteringKey="name"
-    placeholder="Страна"
+    :placeholder="t('country')"
     :searchable="true"
     @change="code => emit('change', code)"
   >
@@ -23,9 +23,11 @@
 import Select from './ui/select.vue';
 import { CountryCodeType } from '../types';
 import { computed } from 'vue'
-import { injectLoginContext } from './forms/login/form.vue';
+import { injectLoginContext } from './forms/login/form.vue'
+import { useI18n} from 'vue-i18n'
 
 const { countryCodeList } = injectLoginContext()
+const { t } = useI18n()
 
 defineProps<{
   defaultValue?: CountryCodeType | undefined | null
