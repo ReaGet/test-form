@@ -23,17 +23,22 @@ export type CreateSessionResponse = {
   channels: ChannelType[]
 }
 
-export const createSession = async (payload: CreateSessionPayload): Promise<CreateSessionResponse|null> => {
-  const body = JSON.stringify(payload)
+const makeRequest = async (path: string, body: string) => {
+  return await fetch(`${import.meta.env.VITE_API_URL}/${path}`, {
+    method: 'POST',
+    headers: getRequestHeaders(),
+    body,
+    redirect: 'follow'
+  })
+  .then(response => response.json())
+}
 
+export const createSession = async (payload: CreateSessionPayload): Promise<CreateSessionResponse|null> => {
   try {
-    return await fetch(`${import.meta.env.VITE_API_URL}/create`, {
-      method: 'POST',
-      headers: getRequestHeaders(),
-      body,
-      redirect: 'follow'
-    })
-    .then(response => response.json())
+    return await makeRequest(
+      'create',
+      JSON.stringify(payload)
+    )
   }
   catch (e) {
     console.log(e)
@@ -41,27 +46,46 @@ export const createSession = async (payload: CreateSessionPayload): Promise<Crea
   }
 }
 
-export type SendSessionPayload = {
+export type SendCodePayload = {
   session_id: string
   type: string
 } 
 
-export type SendSessionResponse = {
+export type SendCodeResponse = {
   session_id: string
   session_expired_at: string
   channels: ChannelType[]
 }
 
-export const sendSession = async (payload: SendSessionPayload): Promise<SendSessionResponse|null> => {
-  const body = JSON.stringify(payload)
-
+export const sendCode = async (payload: SendCodePayload): Promise<SendCodeResponse|null> => {
   try {
-    return await fetch(`${import.meta.env.VITE_API_URL}/send`, {
-      method: 'POST',
-      headers: getRequestHeaders(),
-      body,
-    })
-    .then(response => response.json())
+    return await makeRequest(
+      'send',
+      JSON.stringify(payload)
+    )
+  }
+  catch (e) {
+    console.log(e)
+    return null
+  }
+}
+
+export type CheckCodePayload = {
+  session_id: string
+  code: string
+} 
+
+export type CheckCodeResponse = {
+  verify_token: string
+  is_test: boolean
+}
+
+export const checkCode = async (payload: CheckCodePayload): Promise<CheckCodeResponse|null> => {
+  try {
+    return await makeRequest(
+      'check',
+      JSON.stringify(payload)
+    )
   }
   catch (e) {
     console.log(e)

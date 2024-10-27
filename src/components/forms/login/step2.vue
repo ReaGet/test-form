@@ -15,7 +15,7 @@
       </template>
     </Select>
     <div class="relative">
-      <Input name="phone" placeholder="Введите код" v-model="codeValue" />
+      <Input name="phone" placeholder="Введите код" :disabled="isLoading" @input="handleInput" :error="error" />
       <div class="absolute top-1/2 right-6 -translate-y-1/2 text-[1.4rem]">
         <button
           v-if="!isWaitingCode"
@@ -32,56 +32,66 @@
       >
         <IconArrowLeft className="fill-current" color="''" :width="16" :height="16"/> Назад
       </button>
-      <button
-        class="h-[5.5rem] w-full mt-4 bg-primary hover:bg-primary-hover text-[1.6rem] text-white rounded-lg transition-colors"
-      >Продолжить</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watchEffect } from 'vue' 
+import { ref, watchEffect } from 'vue' 
 import IconArrowLeft from '../../icons/i-arrow-left.vue'
 import Select from '../../ui/select.vue'
 import Input from '../../ui/input.vue'
 import { injectLoginContext } from './form.vue'
-import { sendSession, type SendSessionPayload, type ChannelType } from '../../../queries/signIn'
+import { sendCode, type SendCodePayload, type ChannelType, checkCode } from '../../../queries/signIn'
 
-const codeValue = ref('')
 const isWaitingCode = ref(false)
 const countdownValue = ref(0)
 const timerId = ref<ReturnType<typeof setInterval> | null>(null)
 const currentChannel = ref<ChannelType|null>()
+const isLoading = ref<boolean>(false)
+const error = ref('')
 
 const { prevStep, session } = injectLoginContext()
 
 watchEffect(() => {
-  console.log(currentChannel.value)
   countdownValue.value = currentChannel.value?.timeout || 0
 })
 
 watchEffect(() => {
-  console.log(currentChannel.value)
   currentChannel.value = session.value?.channels[0]
 })
 
-// const defaultValue = computed(() => {
-//   return session.value?.channels[0]
-// })
+const handleInput = (value: string) => {
+  if (value.length < 4 || isLoading.value || !parseInt(value)) return
+  isLoading.value = true
+  checkCode({
+    session_id: session.value!.session_id,
+    code: value
+  })
+  .then(data => {
+    if ('success' in data! && !data.success && 'error' in data!) {
+      error.value = data.error as string
+      return
+    }
+    console.log(data)
+  })
+  .finally(() => {
+    isLoading.value = false
+  })
+}
 
 const handleSend = async () => {
-  console.log(countdownValue)
   if (countdownValue.value > 0) {
     startCountdown()
     return
   }
   startCountdown()
-  sendSession(getPayload()).then((data) => {
+  sendCode(getSendCodePayload()).then(data => {
     console.log(data)
   })
 }
 
-const getPayload = (): SendSessionPayload => {
+const getSendCodePayload = (): SendCodePayload => {
   return {
     session_id: session.value!.session_id,
     type: currentChannel.value!.type

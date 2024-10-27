@@ -34,7 +34,6 @@ type LoginFormContext = {
   prevStep: () => void
   countryCode: Ref<CountryCodeType|null>
   phoneNumber: Ref<string>
-  // channel: Ref<ChannelType|null>
   countryCodeList: Ref<CountryCodeType[]>
   session: Ref<CreateSessionResponse|null>
 }
