@@ -16,6 +16,7 @@ type LazyFetchReturnType<T> = [
 type FetchOptions = {
   method: 'GET' | 'POST'
   headers?: Record<string, string>,
+  body?: Record<string, any>
 }
 
 const defaultOptions: FetchOptions = {
@@ -30,12 +31,16 @@ export const useLazyFetch = <T>(url: string, options: FetchOptions = defaultOpti
   const isError = ref(false)
   const data = ref<T|null>(null)
   const error = ref<any>('')
+
+  const body = options.headers?.body
+
   const finalOptions: FetchOptions = {
     ...defaultOptions,
     ...options,
     headers: {
       ...defaultOptions.headers,
-      ...options.headers
+      ...options.headers,
+      ...(body ? { body: JSON.stringify(body) } : {})
     }
   }
 
@@ -45,6 +50,7 @@ export const useLazyFetch = <T>(url: string, options: FetchOptions = defaultOpti
   }
 
   const tryFetch = async () => {
+    console.log(finalOptions)
     try {
       return await fetch(url, finalOptions)
         .then(res => res.json())

@@ -34,7 +34,9 @@ type LoginFormContext = {
   prevStep: () => void
   countryCode: Ref<CountryCodeType|null>
   phoneNumber: Ref<string>
-  channel: Ref<ChannelType|null>
+  // channel: Ref<ChannelType|null>
+  countryCodeList: Ref<CountryCodeType[]>
+  session: Ref<CreateSessionResponse|null>
 }
 
 export const [injectLoginContext, provideLoginContext] = createContext<LoginFormContext>('LoginFormContext')
@@ -52,25 +54,44 @@ const headings = [
 </script>
 
 <script setup lang="ts">
-import { computed, Ref, ref } from 'vue'
+import { computed, Ref, ref, onMounted } from 'vue'
 import { createContext } from '../../../lib/createContext'
 import IconArrowDownFilled from '../../icons/i-arrow-down-filled.vue'
-// import IconArrowLeft from '../../icons/i-arrow-left.vue'
 import Step1 from './step1.vue'
 import Step2 from './step2.vue'
-import { CountryCodeType, ChannelType } from '../../../types'
+import { CountryCodeType } from '../../../types'
+import { getCountryCodes } from '../../../queries/countryCodes'
+import { createSession, CreateSessionPayload, CreateSessionResponse } from '../../../queries/signIn'
 
 const currentStep = ref(0)
 const countryCode = ref<CountryCodeType|null>(null)
 const phoneNumber = ref('')
-const channel = ref<ChannelType|null>(null)
+const countryCodeList = ref<CountryCodeType[]>([])
+const session = ref<CreateSessionResponse|null>(null)
+
+onMounted(() => {
+  getCountryCodes().then((values) => {
+    countryCodeList.value = values
+  })
+})
 
 const prevStep = () => {
   currentStep.value--
 }
 
 const nextStep = () => {
-  currentStep.value++
+  createSession(getPayload()).then(data => {
+    session.value = data
+    currentStep.value++
+  })
+}
+
+const getPayload = (): CreateSessionPayload => {
+  return {
+    to: phoneNumber.value.split(' ').join(''),
+    type: 'whatsapp',
+    send: false,
+  }
 }
 
 provideLoginContext({
@@ -78,7 +99,8 @@ provideLoginContext({
   prevStep,
   countryCode,
   phoneNumber,
-  channel
+  countryCodeList,
+  session
 })
 
 const currentHeading = computed(() => {

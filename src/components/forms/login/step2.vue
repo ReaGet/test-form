@@ -1,10 +1,10 @@
 <template>
   <div class="flex flex-col gap-16 mt-12">
     <Select
-      :items="channelList"
+      :items="session?.channels || []"
       placeholder="Способ получения кода"
-      :default-value="channel || channelList[0]"
-      @change="value => channel = value"
+      :default-value="currentChannel"
+      @change="value => currentChannel = value"
     >
       <template v-slot:selected="{ value }">
       {{ value?.name || '' }}
@@ -22,7 +22,7 @@
           class="text-primary hover:text-primary-hover"
           @click.prevent="handleSend"
         >Отправить</button>
-        <span v-else class="text-[#9E9E9E] pointer-events-none">0:{{ formatCountdown(countdownValue) }}</span>
+        <span v-else-if="countdownValue && countdownValue > 0" class="text-[#9E9E9E] pointer-events-none">0:{{ formatCountdown(countdownValue) }}</span>
       </div>
     </div>
     <div class="flex gap-4">
@@ -40,36 +40,52 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watchEffect } from 'vue' 
+import IconArrowLeft from '../../icons/i-arrow-left.vue'
 import Select from '../../ui/select.vue'
 import Input from '../../ui/input.vue'
-import { ref, watchEffect } from 'vue'
-import { ChannelType } from '../../../types';
-import { injectLoginContext } from './form.vue';
-// import { useFetch, useLazyFetch } from '../../../hooks/use-fetch';
+import { injectLoginContext } from './form.vue'
+import { sendSession, type SendSessionPayload, type ChannelType } from '../../../queries/signIn'
 
-const channelList: ChannelType[] = [
-  { name: 'WhatApp', icon: 'wa' },
-  { name: 'Telegram', icon: 'tg' },
-  { name: 'Viber', icon: 'vb' },
-  { name: 'SMS', icon: 'sms' },
-]
-const countdownInitValue = 30
 const codeValue = ref('')
 const isWaitingCode = ref(false)
-const countdownValue = ref(countdownInitValue)
+const countdownValue = ref(0)
 const timerId = ref<ReturnType<typeof setInterval> | null>(null)
+const currentChannel = ref<ChannelType|null>()
 
-const { prevStep } = injectLoginContext()
-const apiUrl = 'http://api.kod.mobi/v2'
+const { prevStep, session } = injectLoginContext()
 
-// const [$fetch] = useLazyFetch(`${apiUrl}/create`, {
-//   method: 'POST'
+watchEffect(() => {
+  console.log(currentChannel.value)
+  countdownValue.value = currentChannel.value?.timeout || 0
+})
+
+watchEffect(() => {
+  console.log(currentChannel.value)
+  currentChannel.value = session.value?.channels[0]
+})
+
+// const defaultValue = computed(() => {
+//   return session.value?.channels[0]
 // })
 
-const { channel } = injectLoginContext()
-
 const handleSend = async () => {
+  console.log(countdownValue)
+  if (countdownValue.value > 0) {
+    startCountdown()
+    return
+  }
   startCountdown()
+  sendSession(getPayload()).then((data) => {
+    console.log(data)
+  })
+}
+
+const getPayload = (): SendSessionPayload => {
+  return {
+    session_id: session.value!.session_id,
+    type: currentChannel.value!.type
+  }
 }
 
 const startCountdown = () => {
@@ -84,17 +100,11 @@ const startCountdown = () => {
 
 const resetCoundown = () => {
   clearInterval(timerId.value as number)
-  countdownValue.value = countdownInitValue
+  countdownValue.value = currentChannel.value!.timeout
   isWaitingCode.value = false
 }
 
 const formatCountdown = (value: number) => {
   return value < 10 ? `0${value}` : value
 }
-
-watchEffect(() => {
-  // const code = channel.value
-  // if (!code) return
-  // console.log(code.name)
-})
 </script>

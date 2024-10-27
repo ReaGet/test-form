@@ -22,22 +22,20 @@
 <script setup lang="ts">
 import Select from './ui/select.vue';
 import { CountryCodeType } from '../types';
-import { useFetch } from '../hooks/use-fetch'
-import { computed } from 'vue';
+import { computed } from 'vue'
+import { injectLoginContext } from './forms/login/form.vue';
 
-const codesUrl = 'https://codes.free.beeceptor.com/codes'
+const { countryCodeList } = injectLoginContext()
+
 defineProps<{
   defaultValue?: CountryCodeType | undefined | null
 }>()
-
-// const { isLoading, data: codes } = useFetch<CountryCodeType[]>(codesUrl)
-const codes: CountryCodeType[] = [{"name":"Afghanistan","flag":"🇦🇫","code":"AF","dial_code":"+93"},{"name":"Åland Islands","flag":"🇦🇽","code":"AX","dial_code":"+358"},{"name":"Albania","flag":"🇦🇱","code":"AL","dial_code":"+355"},{"name":"Algeria","flag":"🇩🇿","code":"DZ","dial_code":"+213"},{"name":"American Samoa","flag":"🇦🇸","code":"AS","dial_code":"+1684"}]
 
 const emit = defineEmits<{
   (e: 'change', code: CountryCodeType): void
 }>()
 
 const loadedCodes = computed(() => {
-  return codes || []
+  return countryCodeList || []
 })
 </script>

@@ -11,8 +11,3 @@ export type CountryCodeType = {
   code: string
   dial_code: string
 }
-
-export type ChannelType = {
-  name: string
-  icon: string
-}
